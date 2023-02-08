@@ -1,5 +1,6 @@
 # This is a sample Python script.
 
+import os
 # Press Shift+F10 to execute it or replace it with your code.
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 
@@ -17,8 +18,12 @@ if __name__ == '__main__':
             for column in range(constant.LENGTH_OF_SQUARE):
                 print(board[row][column], end=" ")
             print()
+        if game.is_win():
+            print("You win!!!")
+            break
         moving = input('your move: ')
         game.move(moving)
+        os.system('cls')
     print('end game')
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/

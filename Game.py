@@ -32,6 +32,7 @@ class Game:
                     continue
                 if self.__board[x][y] == self.__board[u][v]:
                     self.__board[x][y] *= 2
+                    self.__score += self.__board[x][y]
                     self.__board[u][v] = 0
                     self.__max_value = max(self.__max_value, self.__board[x][y])
                 x, y = u, v
@@ -59,16 +60,16 @@ class Game:
 
     def __generate_new_square(self):
         position = random.randint(1, self.__blank_space)
+        two_or_four = (random.randint(1, 10) % 8 != 0)
         count = 0
         for row in range(constant.LENGTH_OF_SQUARE):
             for column in range(constant.LENGTH_OF_SQUARE):
                 if self.__board[row][column] == 0:
                     count += 1
                     if count == position:
-                        self.__board[row][column] = 2
-                        self.__max_value = max(self.__max_value, 2)
+                        self.__board[row][column] = 4 - two_or_four * 2
+                        self.__max_value = max(self.__max_value, self.__board[row][column])
                         self.__blank_space -= 1
-                        self.__score += 2
 
     def get_board(self):
         return self.__board
@@ -85,3 +86,8 @@ class Game:
                         self.__board[row][column+1]:
                     return False
         return True
+
+    def is_win(self):
+        if self.__max_value == 2048:
+            return True
+        return False
