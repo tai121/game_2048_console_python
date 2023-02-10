@@ -1,6 +1,7 @@
 import constant
 from collections import deque
 import random
+import copy
 
 
 class Game:
@@ -9,13 +10,11 @@ class Game:
         self.__board = list(list(0 for _ in range(constant.LENGTH_OF_SQUARE)) for _ in range(constant.LENGTH_OF_SQUARE))
         self.__max_value = 0
         self.__score = 0
-        self.__blank_space = constant.LENGTH_OF_SQUARE**2
+        self.__blank_space = constant.LENGTH_OF_SQUARE ** 2
         self.__generate_new_square()
 
     def move(self, moving):
-        check_board = list(list(self.__board[row][column] for column in range(constant.LENGTH_OF_SQUARE)) for row in
-                           range(constant.LENGTH_OF_SQUARE)
-                           )
+        check_board = copy.deepcopy(self.__board)
         edge_longer = range(constant.LENGTH_OF_SQUARE)
         is_vertical = True if moving == constant.DOWN or moving == constant.UP else False
         is_revere = True if moving == constant.RIGHT or moving == constant.DOWN else False
@@ -51,12 +50,15 @@ class Game:
                     self.__board[u][v] = 0
                     list_blank_squares.append((u, v))
             self.__blank_space += len(list_blank_squares)
+        return check_board
 
+    def is_change(self, check_board):
         for row in range(constant.LENGTH_OF_SQUARE):
             for column in range(constant.LENGTH_OF_SQUARE):
                 if self.__board[row][column] != check_board[row][column]:
                     self.__generate_new_square()
-                    return
+                    return True
+        return False
 
     def __generate_new_square(self):
         position = random.randint(1, self.__blank_space)
@@ -80,10 +82,10 @@ class Game:
     def is_end(self):
         if self.__blank_space > 0:
             return False
-        for row in range(constant.LENGTH_OF_SQUARE-1):
-            for column in range(constant.LENGTH_OF_SQUARE-1):
-                if self.__board[row][column] == self.__board[row+1][column] or self.__board[row][column] == \
-                        self.__board[row][column+1]:
+        for row in range(constant.LENGTH_OF_SQUARE - 1):
+            for column in range(constant.LENGTH_OF_SQUARE - 1):
+                if self.__board[row][column] == self.__board[row + 1][column] or self.__board[row][column] == \
+                        self.__board[row][column + 1]:
                     return False
         return True
 
@@ -91,3 +93,6 @@ class Game:
         if self.__max_value == 2048:
             return True
         return False
+
+    def get_max_value(self):
+        return self.__max_value
