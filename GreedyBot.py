@@ -6,37 +6,29 @@ import numpy as np
 
 class GreedyBot:
     def __init__(self):
-        self.__greedy_board = [[4**6, 2**5, 2**4, 2**3],
-                               [4**8, 2**4, 2**3, 2**2],
-                               [4**10, 2**3, 2**2, 2**1],
-                               [4**13, 4**2, 4**1, 2**0]]
+        self.__greedy_board = [[4**10, 4**5, 4**4, 4**3],
+                               [4**13, 4**4, 4**3, 4**2],
+                               [4**15, 4**3, 4**2, 4**1],
+                               [4**20, 4**2, 4**1, 4**0]]
 
     def __calculate_greedy_score(self, moving, game):
         g = copy.deepcopy(game)
         t = g.move(moving)
         yield int(np.sum(np.array(g.get_board()) * np.array(self.__greedy_board)))
         yield g.is_change(t)
+        yield g
 
-    def predict(self, game):
+    def predict(self, game, remaining_time):
+        remaining_time -= 1
         mx = 0
         moving = constant.UP
-        (value, change) = self.__calculate_greedy_score(constant.UP, game)
-        if change:
-            mx = value
-            moving = constant.UP
+        for the_move in constant.MOVE:
+            (value, change, g) = self.__calculate_greedy_score(the_move, game)
+            if change:
+                if remaining_time > 0:
+                    mov, value = self.predict(g, remaining_time)
+                if value > mx:
+                    mx = value
+                    moving = the_move
 
-        (value, change) = self.__calculate_greedy_score(constant.DOWN, game)
-        if mx < value and change:
-            moving = constant.DOWN
-            mx = value
-
-        (value, change) = self.__calculate_greedy_score(constant.LEFT, game)
-        if mx < value and change:
-            moving = constant.LEFT
-            mx = value
-
-        (value, change) = self.__calculate_greedy_score(constant.RIGHT, game)
-        if mx < value and change:
-            moving = constant.RIGHT
-
-        return moving
+        return moving, mx
